@@ -14,12 +14,41 @@ size = Vector2(40, 40)
 
 [node name="Floor" type="StaticBody2D" parent="."]
 position = Vector2(-47, 473)
+metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
 position = Vector2(1071.5, 20)
 shape = SubResource("RectangleShape2D_l164w")
 
 [node name="ColorRect" type="ColorRect" parent="Floor"]
+offset_right = 2143.0
+offset_bottom = 40.0
+
+[node name="Floor2" type="StaticBody2D" parent="."]
+position = Vector2(883, 795)
+rotation = -1.57079
+scale = Vector2(0.360002, 1.00511)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor2"]
+position = Vector2(1071.5, 20)
+shape = SubResource("RectangleShape2D_l164w")
+
+[node name="ColorRect" type="ColorRect" parent="Floor2"]
+offset_right = 2143.0
+offset_bottom = 40.0
+
+[node name="Floor3" type="StaticBody2D" parent="."]
+position = Vector2(745, 795)
+rotation = -1.57079
+scale = Vector2(0.360002, 1.00511)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor3"]
+position = Vector2(1071.5, 20)
+shape = SubResource("RectangleShape2D_l164w")
+
+[node name="ColorRect" type="ColorRect" parent="Floor3"]
 offset_right = 2143.0
 offset_bottom = 40.0
 
