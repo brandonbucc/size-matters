@@ -25,7 +25,7 @@ offset_right = 2143.0
 offset_bottom = 40.0
 
 [node name="Floor2" type="StaticBody2D" parent="."]
-position = Vector2(883, 795)
+position = Vector2(816, 795)
 rotation = -1.57079
 scale = Vector2(0.360002, 1.00511)
 metadata/_edit_group_ = true
@@ -39,7 +39,7 @@ offset_right = 2143.0
 offset_bottom = 40.0
 
 [node name="Floor3" type="StaticBody2D" parent="."]
-position = Vector2(745, 795)
+position = Vector2(735, 795)
 rotation = -1.57079
 scale = Vector2(0.360002, 1.00511)
 metadata/_edit_group_ = true

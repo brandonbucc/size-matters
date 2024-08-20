@@ -25,7 +25,6 @@ func _physics_process(delta):
 			movement(delta)
 		WALL:
 			wall(delta)
-	print(on_wall(),left_wall(),right_wall(),state)
 
 func movement(delta):
 	var input = Input.get_axis("left", "right")
@@ -65,6 +64,11 @@ func movement(delta):
 		state = WALL
 	if was_on_floor && !is_on_floor():
 		$CoyoteTime.start()
+	var up_down = Input.get_axis("up", "down")
+	if up_down != 0:
+		$Camera2D.drag_vertical_offset = up_down * 2
+	else:
+		$Camera2D.drag_vertical_offset = 0
 
 func on_wall():
 	return left_wall() || right_wall()
@@ -108,7 +112,7 @@ func wall(delta):
 func dash():
 	velocity.x = dash_speed
 	velocity.y = 0
-	if $DashTime.is_stopped() && is_on_wall():
+	if $DashTime.is_stopped() && on_wall():
 		state = WALL
 	elif $DashTime.is_stopped():
 		state = MOVEMENT
