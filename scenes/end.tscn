@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://cjcsa6nisqsi0"]
+
+[ext_resource type="Texture2D" uid="uid://by4pvtd3b3hjr" path="res://graphics/thanks.png" id="1_ix3vj"]
+
+[node name="End" type="Node2D"]
+
+[node name="Thanks" type="Sprite2D" parent="."]
+position = Vector2(592, 215)
+texture = ExtResource("1_ix3vj")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Game by MrBaconFat for GMTK Jam 2024"
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 424.0
+offset_top = 444.0
+offset_right = 784.0
+offset_bottom = 467.0
+text = "Sorry this was all i could do in the time limit lol"

@@ -6,6 +6,7 @@
 size = Vector2(40, 40)
 
 [node name="Player" type="CharacterBody2D"]
+scale = Vector2(0.99, 0.99)
 script = ExtResource("1_mm8ev")
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -13,6 +14,7 @@ offset_left = -20.0
 offset_top = -20.0
 offset_right = 20.0
 offset_bottom = 20.0
+color = Color(1, 0.25, 0.25, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_ikmgv")
@@ -38,7 +40,10 @@ wait_time = 0.5
 one_shot = true
 
 [node name="DashTime" type="Timer" parent="."]
-wait_time = 0.05
+wait_time = 0.15
+one_shot = true
+
+[node name="SizeCooldown" type="Timer" parent="."]
 one_shot = true
 
 [node name="Camera2D" type="Camera2D" parent="."]

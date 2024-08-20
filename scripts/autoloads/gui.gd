@@ -26,7 +26,7 @@ func _ready():
 		new_scene.hide()
 
 func _input(_event):
-	if Input.is_action_just_pressed("pause"):
+	if Input.is_action_just_pressed("pause") && (get_tree().current_scene.name != "MainMenu" || get_tree().current_scene.name != "End"):
 		if get_tree().paused:
 			get_tree().paused = false
 		else:
@@ -35,6 +35,7 @@ func _input(_event):
 		options.visible = !options.visible
 		if options.visible:
 			options.update_button_values()
+			options.get_child(0).get_child(0).get_child(0).get_child(4).grab_focus()
 
 func centre_window():
 	var screen_centre = DisplayServer.screen_get_position() + DisplayServer.screen_get_size() / 2

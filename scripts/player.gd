@@ -1,18 +1,23 @@
 extends CharacterBody2D
 
-const ACCELERATION = 3000
-const FRICTION = 3000
 const JUMP_CANCEL = 14000
-const JUMP_HEIGHT = -600
-const MAX_SPEED = 400
+const SIZE_CHANGE = 5
 
 enum {DASH, MOVEMENT, WALL}
+enum {SMALL, NORMAL, LARGE}
 
+@onready var tile_map_layer = get_node("/root/Level/TileMapLayer")
+
+var acceleration = 3000
 var can_dash = true
 var dash_speed = 900
 var direction = 1
-var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
+var friction = 3000
+var gravity = 1500
 var jump_buffered = false
+var jump_height = -600
+var max_speed = 400
+var size = NORMAL
 var state = MOVEMENT
 var wall_jump = 600
 var wall_slide = 750
@@ -25,27 +30,53 @@ func _physics_process(delta):
 			movement(delta)
 		WALL:
 			wall(delta)
+	change_size()
+	reset()
 
 func movement(delta):
 	var input = Input.get_axis("left", "right")
+	if size == SMALL:
+		max_speed = 650
+		acceleration = 6000
+		friction = 6000
+		gravity = 1000
+		jump_height = -450
+		if $Camera2D.zoom != Vector2.ONE * 1.5:
+			$Camera2D.zoom = lerp($Camera2D.zoom, Vector2.ONE * 1.5, SIZE_CHANGE * delta)
+	if size == NORMAL:
+		max_speed = 400
+		acceleration = 3000
+		friction = 3000
+		gravity = 1500
+		jump_height = -600
+		if $Camera2D.zoom != Vector2.ONE:
+			$Camera2D.zoom = lerp($Camera2D.zoom, Vector2.ONE, SIZE_CHANGE * delta)
+	if size == LARGE:
+		max_speed = 250
+		acceleration = 2000
+		friction = 2000
+		gravity = 2000
+		jump_height = -750
+		if $Camera2D.zoom != Vector2.ONE / 1.5:
+			$Camera2D.zoom = lerp($Camera2D.zoom, Vector2.ONE / 1.5, SIZE_CHANGE * delta)
 	if input != 0:
-		velocity = velocity.move_toward(Vector2(input * MAX_SPEED, velocity.y), ACCELERATION * delta)
+		velocity = velocity.move_toward(Vector2(input * max_speed, velocity.y), acceleration * delta)
 		direction = input
 	else:
-		velocity = velocity.move_toward(Vector2(0, velocity.y), FRICTION * delta)
+		velocity = velocity.move_toward(Vector2(0, velocity.y), friction * delta)
 	velocity.y += gravity * delta
 	var was_on_floor = is_on_floor()
 	if Input.is_action_just_pressed("jump") && (is_on_floor() || !$CoyoteTime.is_stopped()):
-		velocity.y = JUMP_HEIGHT
+		velocity.y = jump_height
 	elif Input.is_action_just_pressed("jump") && !is_on_floor():
 		jump_buffered = true
 		$JumpBuffer.start()
 	if jump_buffered && is_on_floor() && !$JumpBuffer.is_stopped():
-		velocity.y = JUMP_HEIGHT
+		velocity.y = jump_height
 		jump_buffered = false
 	if Input.is_action_just_released("jump") && velocity.y < 0:
 		velocity = velocity.move_toward(Vector2(velocity.x, 0), JUMP_CANCEL * delta)
-	if Input.is_action_just_pressed("dash") && can_dash:
+	if Input.is_action_just_pressed("dash") && can_dash && size == NORMAL:
 		$DashCooldown.start()
 		$DashTime.start()
 		state = DASH
@@ -58,7 +89,7 @@ func movement(delta):
 	else:
 		dash_speed = 900
 	move_and_slide()
-	if on_wall() && !is_on_floor():
+	if on_wall() && !is_on_floor() && size != LARGE:
 		$DashCooldown.stop()
 		velocity = Vector2.ZERO
 		state = WALL
@@ -82,9 +113,9 @@ func right_wall():
 func wall(delta):
 	var input = Input.get_axis("left", "right")
 	if input != 0:
-		velocity = velocity.move_toward(Vector2(input * MAX_SPEED, velocity.y), ACCELERATION * delta)
+		velocity = velocity.move_toward(Vector2(input * max_speed, velocity.y), acceleration * delta)
 	else:
-		velocity = velocity.move_toward(Vector2(0, velocity.y), FRICTION * delta)
+		velocity = velocity.move_toward(Vector2(0, velocity.y), friction * delta)
 	velocity.y += wall_slide * delta
 	if left_wall():
 		dash_speed = 900
@@ -94,7 +125,7 @@ func wall(delta):
 		wall_jump = -600
 	if Input.is_action_just_released("jump") && velocity < Vector2.ZERO:
 		velocity = velocity.move_toward(Vector2.ZERO, JUMP_CANCEL * delta)
-	if Input.is_action_just_pressed("dash") && can_dash:
+	if Input.is_action_just_pressed("dash") && can_dash && size == NORMAL:
 		$DashCooldown.start()
 		$DashTime.start()
 		state = DASH
@@ -103,7 +134,7 @@ func wall(delta):
 	else:
 		can_dash = true
 	if Input.is_action_just_pressed("jump"):
-		velocity.y = JUMP_HEIGHT
+		velocity.y = jump_height
 		velocity.x = wall_jump
 	move_and_slide()
 	if !on_wall() || is_on_floor():
@@ -112,8 +143,30 @@ func wall(delta):
 func dash():
 	velocity.x = dash_speed
 	velocity.y = 0
-	if $DashTime.is_stopped() && on_wall():
+	if $DashTime.is_stopped() && on_wall() && size != LARGE:
 		state = WALL
 	elif $DashTime.is_stopped():
 		state = MOVEMENT
 	move_and_slide()
+
+func change_size():
+	if Input.is_action_just_pressed("small") && $SizeCooldown.is_stopped():
+		scale = Vector2(0.49, 0.49)
+		size = SMALL
+		$SizeCooldown.start()
+	if Input.is_action_just_pressed("normal") && $SizeCooldown.is_stopped():
+		scale = Vector2(0.99, 0.99)
+		size = NORMAL
+		$SizeCooldown.start()
+	if Input.is_action_just_pressed("large") && $SizeCooldown.is_stopped():
+		scale = Vector2(1.99, 1.99)
+		size = LARGE
+		$SizeCooldown.start()
+
+func reset():
+	if Input.is_action_just_pressed("reset"):
+		get_tree().reload_current_scene()
+
+
+func _on_finish_body_entered(_body: Node2D) -> void:
+	get_tree().change_scene_to_file("res://scenes/end.tscn")

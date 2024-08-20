@@ -30,7 +30,6 @@ func _ready():
 	music_slider.value = db_to_linear(AudioServer.get_bus_volume_db(music_bus))
 	sfx_slider.value = db_to_linear(AudioServer.get_bus_volume_db(sfx_bus))
 	add_resolutions()
-	resolution.grab_focus()
 
 func add_resolutions():
 	for r in GUI.resolutions:
